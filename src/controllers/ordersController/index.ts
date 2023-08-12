@@ -4,27 +4,31 @@ import sql from "../../db.js";
 class ordersController {
   async createOrder(req: Request, res: Response, next: NextFunction) {
     try {
-      const { userId, sneakers, date, totalPrice } = req.body;
+      const { userId, sneakers, date, totalPrice, status } = req.body;
 
       const order =
-        await sql`INSERT INTO orders(date, totalprice, userid) VALUES (${date}, ${totalPrice}, ${userId}) RETURNING id`;
+        await sql`INSERT INTO orders(date, totalprice, status, userid) VALUES (${date}, ${totalPrice}, ${status},${userId}) RETURNING id`;
 
       sneakers.map(async (sneaker: any) => {
-        await sql`INSET INTO sneakers_order(ordersid, sneakersid) VALUES (${order[0].id}, ${sneaker.id})`;
+        await sql`INSERT INTO sneakers_order(ordersid, sneakersid) VALUES (${order[0].id}, ${sneaker.id})`;
       });
     } catch (e) {
+      console.log(e);
       return res.status(500).json({ message: "Непредвиденная ошибка!" });
     }
   }
 
   async getAllOrders(req: Request, res: Response, next: NextFunction) {
     try {
-      const { userId } = req.body;
-
-      const orders = await sql`SELECT * FROM orders WHERE userid = ${userId}`;
+      const { userId } = req.query;
+      const orders =
+        await sql`SELECT orders.id, orders.date, orders.status, orders.totalprice, json_agg(sneakers.*) as sneakers FROM orders, sneakers_order, sneakers WHERE userid = ${
+          userId as string
+        } AND sneakers_order.ordersid = orders.id AND sneakers_order.sneakersid = sneakers.id GROUP BY orders.id`;
 
       return res.json(orders);
     } catch (e) {
+      console.log(e);
       return res.status(500).json({ message: "Непредвиденная ошибка!" });
     }
   }

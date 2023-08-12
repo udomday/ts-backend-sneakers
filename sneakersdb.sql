@@ -4,7 +4,7 @@ CREATE TABLE sneakers(id BIGSERIAL PRIMARY key, title TEXT, price INTEGER, imgUR
 
 CREATE TABLE users(id BIGSERIAL PRIMARY key, mail TEXT UNIQUE, password TEXT UNIQUE, role TEXT DEFAULT 'USER');
 
-CREATE TABLE orders(id BIGSERIAL PRIMARY key, date DATE, status TEXT DEFAULT 'ОТПРАВЛЕНО', totalPrice INTEGER, userId INTEGER REFERENCES users (id));
+CREATE TABLE orders(id BIGSERIAL PRIMARY key, date TEXT, status TEXT, totalPrice INTEGER, userId INTEGER REFERENCES users (id));
 
 CREATE TABLE sneakers_order(ordersId INTEGER REFERENCES orders (id), sneakersId INTEGER REFERENCES sneakers (id));
 

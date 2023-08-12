@@ -22,7 +22,6 @@ class userController {
   async registration(req: Request, res: Response, next: NextFunction) {
     try {
       const { mail, password } = req.body as User;
-      console.log(mail, password);
 
       if (!mail || !password) {
         return next(ApiError.badRequest("Некорректная почта или пароль"));
@@ -52,6 +51,7 @@ class userController {
 
       return res.json({ token });
     } catch (e) {
+      console.log(e);
       return res.status(500).json({ message: "Непредвиденная ошибка!" });
     }
   }
